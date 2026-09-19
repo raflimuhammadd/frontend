@@ -1,109 +1,179 @@
 'use client'
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { Modal, ModalFooter } from '@/presentation/components/ui/Modal'
+import { Input } from '@/presentation/components/ui/Input'
+import { Select } from '@/presentation/components/ui/Select'
+import { Button } from '@/presentation/components/ui/Button'
 import { apiClient } from '@/infrastructure/api/client'
-import { useAuthStore } from '@/shared/stores/auth.store'
-import type { Task, TaskStatus } from '@/domain/types'
+
+const taskSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().optional(),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH']),
+  status: z.enum(['TODO', 'IN_PROGRESS', 'DONE', 'BLOCKED']),
+  assignedToId: z.string().optional(),
+  assignedDepartment: z.enum(['PRODUCT', 'ENGINEERING', 'DESIGN', 'CLIENT']).optional(),
+  dueDate: z.string().optional(),
+  clientVisible: z.boolean().optional(),
+})
+
+type TaskFormData = z.infer<typeof taskSchema>
 
 interface TaskModalProps {
-  task: Task
-  projectId: string
   isOpen: boolean
   onClose: () => void
+  projectId: string
+  task?: any
+  onTaskCreated?: () => void
+  onTaskUpdated?: () => void
 }
 
-export function TaskModal({ task, projectId, isOpen, onClose }: TaskModalProps) {
-  const queryClient = useQueryClient()
-  const { user } = useAuthStore()
+export function TaskModal({
+  isOpen,
+  onClose,
+  projectId,
+  task,
+  onTaskCreated,
+  onTaskUpdated,
+}: TaskModalProps) {
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState('')
 
-  const { data: dependencies } = useQuery({
-    queryKey: ['task-dependencies', task.id],
-    queryFn: async () => {
-      const response = await apiClient.get(
-        `/projects/${projectId}/tasks/${task.id}/dependencies`
-      )
-      return response.data.data || response.data
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<TaskFormData>({
+    resolver: zodResolver(taskSchema),
+    defaultValues: task || {
+      priority: 'MEDIUM',
+      status: 'TODO',
+      clientVisible: false,
     },
-    enabled: isOpen,
   })
 
-  const updateTaskMutation = useMutation({
-    mutationFn: async (newStatus: TaskStatus) => {
-      const response = await apiClient.put(
-        `/projects/${projectId}/tasks/${task.id}`,
-        {
-          status: newStatus,
-          version: task.version,
-        }
-      )
-      return response.data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks', projectId] })
+  const onSubmit = async (data: TaskFormData) => {
+    setIsLoading(true)
+    setError('')
+
+    try {
+      if (task) {
+        await apiClient.patch(`/tasks/${task.id}`, data)
+        onTaskUpdated?.()
+      } else {
+        await apiClient.post(`/projects/${projectId}/tasks`, data)
+        onTaskCreated?.()
+      }
+      reset()
       onClose()
-    },
-  })
-
-  const canStartTask = () => {
-    if (newStatus === 'IN_PROGRESS' && dependencies) {
-      const blockedDeps = dependencies.filter(
-        (d: any) => d.dependsOnTask?.status !== 'DONE'
-      )
-      return blockedDeps.length === 0
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save task')
+    } finally {
+      setIsLoading(false)
     }
-    return true
   }
 
-  const isPM = user?.role === 'PM'
-  const isAssigned = user?.id === task.assignedToId
-
-  const [newStatus, setNewStatus] = React.useState(task.status)
-
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-lg max-w-md w-full p-6 space-y-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={task ? 'Edit Task' : 'Create New Task'}
+      size="lg"
+    >
+      {error && (
+        <div className="mb-4 rounded-md bg-error/15 border border-error/30 p-3 text-sm text-error">
+          {error}
+        </div>
+      )}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <Input
+          label="Title"
+          placeholder="Task title"
+          error={errors.title?.message}
+          required
+          {...register('title')}
+        />
         <div>
-          <h2 className="text-xl font-bold">{task.title}</h2>
-          <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
+          <label className="block text-sm font-medium text-foreground mb-1.5">
+            Description
+          </label>
+          <textarea
+            placeholder="Task description..."
+            className="w-full px-3 py-2 bg-input text-foreground border border-border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-h-[100px] resize-y"
+            {...register('description')}
+          />
+          {errors.description && (
+            <p className="text-error text-sm mt-1">{errors.description.message}</p>
+          )}
         </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Status</label>
-          <select
-            value={newStatus}
-            onChange={(e) => setNewStatus(e.target.value as TaskStatus)}
-            disabled={!isAssigned || (newStatus === 'DONE' && isPM)}
-            className="w-full rounded border border-input bg-background px-3 py-2"
-          >
-            <option value="TODO">To Do</option>
-            <option value="IN_PROGRESS" disabled={!canStartTask()}>
-              In Progress {!canStartTask() ? '(Blocked)' : ''}
-            </option>
-            <option value="DONE">Done</option>
-            <option value="BLOCKED">Blocked</option>
-          </select>
+        <div className="grid grid-cols-2 gap-4">
+          <Select
+            label="Priority"
+            options={[
+              { value: 'LOW', label: 'Low' },
+              { value: 'MEDIUM', label: 'Medium' },
+              { value: 'HIGH', label: 'High' },
+            ]}
+            error={errors.priority?.message}
+            required
+            {...register('priority')}
+          />
+          <Select
+            label="Status"
+            options={[
+              { value: 'TODO', label: 'Todo' },
+              { value: 'IN_PROGRESS', label: 'In Progress' },
+              { value: 'DONE', label: 'Done' },
+              { value: 'BLOCKED', label: 'Blocked' },
+            ]}
+            error={errors.status?.message}
+            required
+            {...register('status')}
+          />
         </div>
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => updateTaskMutation.mutate(newStatus)}
-            disabled={newStatus === task.status || updateTaskMutation.isPending}
-            className="flex-1 bg-primary text-primary-foreground px-3 py-2 rounded disabled:opacity-50"
-          >
-            Save
-          </button>
-          <button
-            onClick={onClose}
-            className="flex-1 border border-input px-3 py-2 rounded hover:bg-input"
-          >
-            Close
-          </button>
+        <Select
+          label="Department"
+          options={[
+            { value: '', label: 'Select department' },
+            { value: 'PRODUCT', label: 'Product Management' },
+            { value: 'ENGINEERING', label: 'Engineering' },
+            { value: 'DESIGN', label: 'Design' },
+            { value: 'CLIENT', label: 'Client' },
+          ]}
+          error={errors.assignedDepartment?.message}
+          {...register('assignedDepartment')}
+        />
+        <Input
+          label="Due Date"
+          type="date"
+          error={errors.dueDate?.message}
+          {...register('dueDate')}
+        />
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="clientVisible"
+            className="w-4 h-4 bg-input border-border rounded focus:ring-2 focus:ring-primary"
+            {...register('clientVisible')}
+          />
+          <label htmlFor="clientVisible" className="text-sm text-foreground">
+            Visible to client
+          </label>
         </div>
-      </div>
-    </div>
+        <ModalFooter>
+          <Button type="button" variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" isLoading={isLoading}>
+            {task ? 'Update Task' : 'Create Task'}
+          </Button>
+        </ModalFooter>
+      </form>
+    </Modal>
   )
 }
-
-import React from 'react'
