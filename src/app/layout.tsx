@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { AuthProvider } from '@/presentation/providers/auth.provider'
+import AuthProvider from '@/presentation/providers/auth.provider'
 import './globals.css'
 
 export const metadata = {
