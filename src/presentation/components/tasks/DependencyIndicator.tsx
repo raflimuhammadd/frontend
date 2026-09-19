@@ -25,15 +25,43 @@ export function DependencyIndicator({ task, projectId }: DependencyIndicatorProp
 
   if (deps.length === 0) return null
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'DONE':
+        return 'text-status-done'
+      case 'IN_PROGRESS':
+        return 'text-status-in-progress'
+      case 'BLOCKED':
+        return 'text-status-blocked'
+      default:
+        return 'text-status-todo'
+    }
+  }
+
   return (
     <div className="mt-2 space-y-1">
       {blockedCount > 0 && (
-        <div className="text-xs bg-red-500/20 text-red-600 px-2 py-1 rounded">
+        <div className="text-[10px] bg-status-blocked/10 text-status-blocked px-2 py-1 rounded font-mono uppercase tracking-[0.08em]">
           {blockedCount} blocker{blockedCount !== 1 ? 's' : ''}
         </div>
       )}
-      <div className="text-xs text-muted-foreground">
-        Depends on {deps.length} task{deps.length !== 1 ? 's' : ''}
+      <div className="space-y-1">
+        {deps.slice(0, 3).map((dep) => (
+          <div 
+            key={dep.id} 
+            className="font-mono text-[10px] text-text-secondary hover:text-brand-red hover:drop-shadow-[0_0_12px_rgba(230,57,70,0.45)] transition-all cursor-pointer"
+          >
+            → NW-{String(dep.dependsOnTaskId).padStart(3, '0')}{' '}
+            <span className={getStatusColor(dep.dependsOnTask?.status || 'TODO')}>
+              {dep.dependsOnTask?.status?.toLowerCase().replace('_', ' ') || 'pending'}
+            </span>
+          </div>
+        ))}
+        {deps.length > 3 && (
+          <div className="font-mono text-[10px] text-text-tertiary">
+            +{deps.length - 3} more
+          </div>
+        )}
       </div>
     </div>
   )

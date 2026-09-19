@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { useRouter } from 'next/navigation'
 import type { User } from '@/domain/types'
 
 interface AuthStore {
@@ -28,6 +29,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+      window.location.href = '/login'
     }
     set({ token: null, user: null, isAuthenticated: false })
   },
