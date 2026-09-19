@@ -49,8 +49,11 @@ export interface TaskDependency {
 }
 
 export interface AuthResponse {
-  token: string
-  user: User
+  success: boolean
+  data: {
+    token: string
+    user: User
+  }
 }
 
 export interface ApiResponse<T> {

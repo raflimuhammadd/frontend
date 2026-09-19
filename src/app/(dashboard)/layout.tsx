@@ -1,8 +1,5 @@
-import { ReactNode } from 'react'
-import { redirect } from 'next/navigation'
+'use client'
 
-export async function ProtectedLayout({ children }: { children: ReactNode }) {
-  // Client-side auth check happens in AuthProvider
-  // This layout wraps protected routes
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
