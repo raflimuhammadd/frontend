@@ -14,14 +14,14 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
     const baseStyles = 'inline-flex items-center font-mono font-semibold rounded-md transition-colors'
     
     const variants = {
-      default: '',
-      outline: 'border',
-      dot: 'gap-2',
+      default: 'px-2.5 py-1',
+      outline: 'border px-2.5 py-1',
+      dot: 'gap-2 px-2 py-1',
     }
     
     const sizes = {
-      sm: 'px-1.5 py-0.5 text-[9px]',
-      md: 'px-2.5 py-1 text-[10px]',
+      sm: 'text-[9px] tracking-wide-15',
+      md: 'text-[10px] tracking-wide-15',
     }
     
     const colors = {
@@ -49,15 +49,15 @@ Badge.displayName = 'Badge'
 export const StatusBadge = ({ status }: { status: TaskStatus }) => {
   const config = {
     TODO: { label: 'Todo', color: '#3b82f6', dotColor: 'status-todo' },
-    IN_PROGRESS: { label: 'In Progress', color: '#f97316', dotColor: 'status-in-progress' },
-    DONE: { label: 'Done', color: '#059669', dotColor: 'status-done' },
-    BLOCKED: { label: 'Blocked', color: '#dc2626', dotColor: 'status-blocked' },
+    IN_PROGRESS: { label: 'In Progress', color: '#f4a261', dotColor: 'status-in-progress' },
+    DONE: { label: 'Done', color: '#2a9d8f', dotColor: 'status-done' },
+    BLOCKED: { label: 'Blocked', color: '#e63946', dotColor: 'status-blocked' },
   }[status]
   
   return (
-    <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.08em] font-semibold font-mono">
+    <span className="flex items-center gap-2 text-[10px] uppercase tracking-wide-08 font-semibold font-mono">
       <span 
-        className="w-2 h-2 rounded-full flex-shrink-0" 
+        className={`w-2 h-2 rounded-full flex-shrink-0 ${status === 'BLOCKED' ? 'animate-pulse-dot' : ''}`} 
         style={{ backgroundColor: config.color }}
       />
       {config.label}

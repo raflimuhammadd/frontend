@@ -24,10 +24,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`w-full h-12 px-4 bg-background-card text-text-primary border rounded-md transition-all focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-text-tertiary
+          className={`w-full h-12 px-4 bg-background-card text-text-primary border text-[13px] transition-all duration-250 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-text-tertiary
             ${error 
-              ? 'border-brand-red focus:border-brand-red focus:ring-4 focus:ring-brand-red/12' 
-              : 'border-border-light focus:border-brand-red focus:ring-4 focus:ring-brand-red/12'
+              ? 'border-brand-red focus:border-brand-red focus:shadow-focus-red' 
+              : 'border-border-light focus:border-brand-red focus:shadow-focus-red'
             } ${className || ''}`}
           {...props}
         />

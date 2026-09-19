@@ -2,71 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Background & Surfaces (from prompt design system) */
-  --background: #f4f5f6;
-  --background-card: #ffffff;
-  --sidebar-bg: #0f1419;
-  --sidebar-border: #252d35;
-  
-  /* Text Colors */
-  --text-primary: #111820;
-  --text-secondary: #7d8a99;
-  --text-tertiary: #aab4bd;
-  --text-on-dark: #e5e5e5;
-  
-  /* Brand Accent Colors */
-  --brand-primary: #0369a1;
-  --brand-red: #e63946;
-  --brand-green: #2a9d8f;
-  --brand-orange: #f4a261;
-  
-  /* Borders & Dividers */
-  --border-light: #cfd6dc;
-  --border-medium: #cbd5e1;
-  --border-dark: #252d35;
-  
-  /* Status Colors (Task States) */
-  --status-todo: #3b82f6;
-  --status-in-progress: #f4a261;
-  --status-done: #2a9d8f;
-  --status-blocked: #e63946;
-  
-  /* Interactive States */
-  --hover-bg: #f9fafb;
-  --focus-ring: #e63946;
-  --shadow-color: #e63946;
-  
-  /* Legacy mappings for compatibility */
-  --foreground: #111827;
-  --card: #ffffff;
-  --card-foreground: #111827;
-  --primary: #0369a1;
-  --primary-foreground: #ffffff;
-  --secondary: #6b7280;
-  --secondary-foreground: #ffffff;
-  --accent: #dc2626;
-  --accent-foreground: #ffffff;
-  --muted: #9ca3af;
-  --muted-foreground: #6b7280;
-  --border: #d1d5db;
-  --input: #ffffff;
-  --ring: #0369a1;
-  --success: #059669;
-  --error: #dc2626;
-  --warning: #f97316;
-  --info: #0284c7;
-}
+@layer base {
+  :root {
+    /* Background & Surfaces (from prompt design system) */
+    --background: 244 245 246;
+    --background-card: 255 255 255;
+    --sidebar-bg: 15 20 25;
+    --sidebar-border: 37 45 53;
+    
+    /* Text Colors */
+    --text-primary: 17 24 32;
+    --text-secondary: 125 138 153;
+    --text-tertiary: 170 180 189;
+    --text-on-dark: 229 229 229;
+    
+    /* Brand Accent Colors */
+    --brand-primary: 17 24 32;
+    --brand-red: 230 57 70;
+    --brand-green: 42 157 143;
+    --brand-orange: 244 162 97;
+    
+    /* Borders & Dividers */
+    --border-light: 207 214 220;
+    --border-medium: 203 213 225;
+    --border-dark: 37 45 53;
+    
+    /* Status Colors (Task States) */
+    --status-todo: 59 130 246;
+    --status-in-progress: 244 162 97;
+    --status-done: 42 157 143;
+    --status-blocked: 230 57 70;
+    
+    /* Interactive States */
+    --hover-bg: 248 250 251;
+    --focus-ring: 230 57 70;
+    --shadow-color: 230 57 70;
+    
+    /* Legacy mappings for compatibility */
+    --foreground: 17 24 32;
+    --card: 255 255 255;
+    --card-foreground: 17 24 32;
+    --primary: 17 24 32;
+    --primary-foreground: 255 255 255;
+    --secondary: 125 138 153;
+    --secondary-foreground: 255 255 255;
+    --accent: 230 57 70;
+    --accent-foreground: 255 255 255;
+    --muted: 170 180 189;
+    --muted-foreground: 125 138 153;
+    --border: 207 214 220;
+    --input: 255 255 255;
+    --ring: 230 57 70;
+    --success: 42 157 143;
+    --error: 230 57 70;
+    --warning: 244 162 97;
+    --info: 2 132 199;
+  }
 
-body {
-  background-color: var(--background);
-  color: var(--text-primary);
-  font-family: 'Satoshi', system-ui, sans-serif;
-  font-feature-settings: "rlig" 1, "calt" 1;
-}
+  body {
+    color: var(--text-primary);
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: rgb(var(--background));
+  }
 
-* {
-  border-color: var(--border-light);
+  * {
+    border-color: var(--border-light);
+  }
 }
 
 @layer base {

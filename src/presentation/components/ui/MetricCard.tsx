@@ -11,16 +11,16 @@ export interface MetricCardProps {
 
 export function MetricCard({ label, value, subtext, icon }: MetricCardProps) {
   return (
-    <div className="bg-background-card px-4 py-5 border border-border-light">
+    <div className="bg-background-card px-4 py-5">
       <div className="flex justify-between items-start">
-        <span className="text-[10px] uppercase tracking-[0.15em] text-text-secondary font-semibold font-mono">
+        <span className="text-[10px] uppercase tracking-wide-15 text-text-secondary font-semibold font-mono">
           {label}
         </span>
         {icon && (
           <span className="inline-block w-[16px] h-[16px] text-text-secondary" data-icon={icon} data-inline="false" />
         )}
       </div>
-      <div className="text-[32px] font-bold tracking-[-0.06em] mt-3 font-heading text-text-primary">
+      <div className="text-[32px] font-bold tracking-tight-06 mt-3 font-heading text-text-primary">
         {value}
       </div>
       {subtext && (

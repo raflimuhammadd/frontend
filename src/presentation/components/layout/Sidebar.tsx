@@ -11,26 +11,12 @@ interface IconProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 const IconifyIcon = ({ icon, ...props }: IconProps) => {
-  const [isLoaded, setIsLoaded] = React.useState(false)
-  
-  React.useEffect(() => {
-    if (!window.iconifyLoaded && typeof window !== 'undefined') {
-      const script = document.createElement('script')
-      script.src = 'https://code.iconify.design/2/2.3.0/iconify.min.js'
-      script.async = true
-      script.onload = () => setIsLoaded(true)
-      document.head.appendChild(script)
-    } else {
-      setIsLoaded(true)
-    }
-  }, [icon])
-
   if (!icon) return null
 
   return (
     <span 
       {...props}
-      className={`inline-block ${isLoaded ? 'iconify' : ''} ${props.className || ''}`}
+      className={`iconify inline-block ${props.className || ''}`}
       data-icon={icon}
       data-inline="false"
     />
@@ -46,24 +32,58 @@ export const Sidebar = () => {
 
   const navItems = [
     { 
+      href: '/', 
+      label: 'Overview', 
+      icon: 'lucide:layout-dashboard',
+      roles: ['PM', 'FRONTEND', 'BACKEND', 'UIUX'],
+      section: 'workspace'
+    },
+    { 
       href: '/projects', 
       label: 'Projects', 
-      icon: 'lucide:layout-dashboard',
-      roles: ['PM', 'FRONTEND', 'BACKEND', 'UIUX']
+      icon: 'lucide:folder-kanban',
+      roles: ['PM', 'FRONTEND', 'BACKEND', 'UIUX'],
+      section: 'workspace'
     },
     { 
       href: '/tasks', 
       label: 'Tasks', 
       icon: 'lucide:check-square-2',
-      roles: ['PM', 'FRONTEND', 'BACKEND', 'UIUX']
+      roles: ['PM', 'FRONTEND', 'BACKEND', 'UIUX'],
+      section: 'workspace'
     },
     { 
-      href: '/admin', 
-      label: 'Admin', 
-      icon: 'lucide:settings',
-      roles: ['PM']
+      href: '/team', 
+      label: 'Team', 
+      icon: 'lucide:users',
+      roles: ['PM', 'FRONTEND', 'BACKEND', 'UIUX'],
+      section: 'workspace'
+    },
+    { 
+      href: '/reports', 
+      label: 'Reports', 
+      icon: 'lucide:bar-chart-3',
+      roles: ['PM'],
+      section: 'operations'
+    },
+    { 
+      href: '/admin/audit', 
+      label: 'Audit trail', 
+      icon: 'lucide:history',
+      roles: ['PM'],
+      section: 'operations'
+    },
+    { 
+      href: '/settings', 
+      label: 'Settings', 
+      icon: 'lucide:settings-2',
+      roles: ['PM'],
+      section: 'operations'
     },
   ].filter(item => item.roles.includes(user.role))
+
+  const workspaceItems = navItems.filter(item => item.section === 'workspace')
+  const operationsItems = navItems.filter(item => item.section === 'operations')
 
   const closeSidebar = () => setIsOpen(false)
 
@@ -91,20 +111,20 @@ export const Sidebar = () => {
 
       {/* Sidebar */}
       <aside 
-        className={`fixed left-0 top-0 z-40 w-[238px] h-screen bg-[#111827] text-[#e5e5e5] flex flex-col border-r border-[#374151] overflow-hidden
+        className={`fixed left-0 top-0 z-40 w-[238px] h-screen bg-brand-dark text-white flex flex-col border-r border-background-dark overflow-hidden
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
       >
         {/* Header */}
-        <div className="h-[84px] px-6 flex items-center border-b border-[#374151]">
-          <div className="w-8 h-8 border border-[#dc2626] text-[#dc2626] flex items-center justify-center mr-3">
+        <div className="h-[84px] px-6 flex items-center border-b border-background-dark">
+          <div className="w-8 h-8 border border-brand-red text-brand-red flex items-center justify-center mr-3">
             <IconifyIcon icon="lucide:command" className="text-[17px]" />
           </div>
           <div>
-            <div className="font-bold tracking-tight text-[20px] leading-5 font-heading">
+            <div className="font-bold tracking-tight-05 text-[20px] leading-5 font-heading">
               nodewave
             </div>
-            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6b7280] mt-1">
+            <div className="font-mono text-[9px] uppercase tracking-wide-20 text-text-secondary mt-1">
               control room
             </div>
           </div>
@@ -112,21 +132,21 @@ export const Sidebar = () => {
 
         {/* Navigation */}
         <div className="px-4 pt-7 flex-1 overflow-y-auto">
-          <p className="px-3 mb-3 text-[10px] uppercase tracking-[0.18em] font-semibold text-[#6b7280] font-mono">
+          <p className="px-3 mb-3 text-[10px] uppercase tracking-wide-18 font-semibold text-[#66727e]">
             Workspace
           </p>
-          <nav className="space-y-1">
-            {navItems.map((item) => {
+          <nav className="space-y-1 mb-8">
+            {workspaceItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={closeSidebar}
-                  className={`flex items-center gap-3 px-3 py-3 text-[12px] uppercase tracking-[0.08em] font-mono transition-colors rounded-md
+                   className={`flex items-center gap-3 px-3 py-3 text-[12px] uppercase tracking-wide-08 text-text-tertiary hover:text-white hover:bg-background-dark/80 transition-colors
                     ${isActive 
-                      ? 'bg-[#dc2626] text-white font-semibold' 
-                      : 'text-[#9ca3af] hover:text-[#e5e5e5] hover:bg-[#1a222a]'
+                      ? 'bg-brand-red text-white font-semibold' 
+                      : ''
                     }`}
                 >
                   <IconifyIcon icon={item.icon} className="text-[16px]" />
@@ -135,31 +155,51 @@ export const Sidebar = () => {
               )
             })}
           </nav>
+
+          {operationsItems.length > 0 && (
+            <>
+              <p className="px-3 mb-3 text-[10px] uppercase tracking-wide-18 font-semibold text-[#66727e]">
+                Operations
+              </p>
+              <nav className="space-y-1">
+                {operationsItems.map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeSidebar}
+                      className={`flex items-center gap-3 px-3 py-3 text-[12px] uppercase tracking-wide-08 text-[#9ca8b3] hover:text-white hover:bg-[#1a222a] transition-colors
+                        ${isActive 
+                          ? 'bg-brand-red text-white font-semibold' 
+                          : ''
+                        }`}
+                    >
+                      <IconifyIcon icon={item.icon} className="text-[16px]" />
+                      {item.label}
+                    </Link>
+                  )
+                })}
+              </nav>
+            </>
+          )}
         </div>
 
         {/* User Profile Footer */}
-        <div className="mt-auto p-4 border-t border-[#374151]">
-          <div className="flex items-center gap-3 mb-3">
-            <Avatar 
-              fallback={`${user.firstName} ${user.lastName}`}
-              src={user.avatar}
-              size="sm"
-            />
+        <div className="mt-auto p-4 border-t border-background-dark">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-background-dark text-text-on-dark flex items-center justify-center font-mono text-[10px]">
+              {user.firstName[0]}{user.lastName[0]}
+            </div>
             <div className="min-w-0 flex-1">
               <div className="text-[12px] font-semibold truncate">
                 {user.firstName} {user.lastName}
               </div>
-              <div className="font-mono text-[9px] uppercase text-[#6b7280] mt-1">
+              <div className="font-mono text-[9px] uppercase text-text-secondary mt-1">
                 {user.role === 'PM' ? 'PM / admin' : user.role.toLowerCase()}
               </div>
             </div>
           </div>
-          <button
-            onClick={logout}
-            className="w-full px-3 py-2 text-[10px] uppercase tracking-[0.1em] font-mono font-semibold text-[#6b7280] hover:text-[#dc2626] hover:bg-[#1a222a] rounded-md transition-colors"
-          >
-            Sign out
-          </button>
         </div>
       </aside>
 

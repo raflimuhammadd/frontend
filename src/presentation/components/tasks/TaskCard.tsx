@@ -19,11 +19,11 @@ export function TaskCard({ task, projectId, onView }: TaskCardProps) {
   return (
     <div 
       onClick={() => onView?.(task)}
-      className="px-5 py-4 grid grid-cols-[2.35fr_1fr_80px_1.3fr_1fr_70px] gap-4 items-center transition-all hover:bg-hover-bg hover:translate-x-[2px] cursor-pointer border-b border-border-light group"
+      className="px-5 py-4 grid grid-cols-[2.35fr_1fr_80px_1.3fr_1fr_70px] gap-4 items-center transition-all duration-250 hover:bg-[#f8fafb] hover:translate-x-[2px] cursor-pointer border-b border-border-light group"
     >
       {/* Task ID + Title */}
       <div className="flex flex-col gap-1 min-w-0">
-        <span className="font-mono text-[10px] text-text-secondary">
+        <span className="font-mono text-[10px] text-text-secondary uppercase tracking-wide-08">
           NW-{String(task.id).padStart(3, '0')}
         </span>
         <span className="text-[13px] font-bold text-text-primary truncate">
@@ -58,7 +58,7 @@ export function TaskCard({ task, projectId, onView }: TaskCardProps) {
       {/* Due Date */}
       <div>
         {task.dueDate && (
-          <span className="font-mono text-[10px] text-text-secondary">
+          <span className="font-mono text-[10px] text-text-secondary uppercase tracking-wide-08">
             {new Date(task.dueDate).toLocaleDateString('en-US', { 
               month: 'short', 
               day: 'numeric' 

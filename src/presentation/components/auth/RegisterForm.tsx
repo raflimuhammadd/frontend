@@ -2,14 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/presentation/components/ui/Button'
-import { Input } from '@/presentation/components/ui/Input'
-import { Select } from '@/presentation/components/ui/Select'
-import { Card, CardContent, CardHeader } from '@/presentation/components/ui/Card'
+import { AuthLayout } from './AuthLayout'
 import { RoleBadge, DepartmentBadge } from '@/presentation/components/ui/Badge'
 import { useAuthStore } from '@/shared/stores/auth.store'
 
@@ -101,108 +97,216 @@ export function RegisterForm() {
     }
   }
 
-  return (
-    <div className="w-full max-w-lg bg-background-card border border-border-light p-8">
-      {/* Logo */}
-      <div className="mb-6 text-center">
-        <div className="w-16 h-16 mx-auto border-2 border-brand-red text-brand-red flex items-center justify-center mb-4">
-          <span className="text-[32px] font-bold font-heading">N</span>
-        </div>
-        <h1 className="text-[24px] font-bold tracking-tight font-heading text-text-primary">nodewave</h1>
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-text-secondary mt-1">
-          control room
-        </p>
-      </div>
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  return (
+    <AuthLayout
+      variant="register"
+      title="Create account."
+      subtitle="Join your team's delivery workspace."
+    >
       {/* Error Message */}
       {error && (
-        <div className="mb-4 rounded-md bg-status-blocked/10 border border-status-blocked/30 p-3 text-[12px] text-status-blocked font-mono">
+        <div className="mb-6 rounded-md bg-status-blocked/10 border border-status-blocked/30 p-3 text-[12px] text-status-blocked font-mono">
           {error}
         </div>
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {/* First Name & Last Name */}
         <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="First Name"
-            placeholder="John"
-            error={errors.firstName?.message}
-            required
-            {...register('firstName')}
-          />
-          <Input
-            label="Last Name"
-            placeholder="Doe"
-            error={errors.lastName?.message}
-            required
-            {...register('lastName')}
-          />
+          <div>
+            <label htmlFor="firstName" className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary mb-2">
+              First Name
+            </label>
+            <input
+              id="firstName"
+              type="text"
+              placeholder="John"
+              className={`w-full h-12 px-4 border bg-white text-[13px] placeholder:text-[#a7b0b8] transition-all focus:outline-none focus:border-brand-red focus:shadow-[0_0_0_3px_rgba(230,57,70,.12)] ${
+                errors.firstName ? 'border-brand-red' : 'border-border-light'
+              }`}
+              {...register('firstName')}
+            />
+            {errors.firstName && (
+              <p className="text-brand-red text-[10px] font-mono mt-1">{errors.firstName.message}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="lastName" className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary mb-2">
+              Last Name
+            </label>
+            <input
+              id="lastName"
+              type="text"
+              placeholder="Doe"
+              className={`w-full h-12 px-4 border bg-white text-[13px] placeholder:text-[#a7b0b8] transition-all focus:outline-none focus:border-brand-red focus:shadow-[0_0_0_3px_rgba(230,57,70,.12)] ${
+                errors.lastName ? 'border-brand-red' : 'border-border-light'
+              }`}
+              {...register('lastName')}
+            />
+            {errors.lastName && (
+              <p className="text-brand-red text-[10px] font-mono mt-1">{errors.lastName.message}</p>
+            )}
+          </div>
         </div>
-        <Input
-          label="Email"
-          type="email"
-          placeholder="john@nodewave.com"
-          error={errors.email?.message}
-          required
-          {...register('email')}
-        />
+
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary mb-2">
+            Email address
+          </label>
+          <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="john@nodewave.com"
+            className={`w-full h-12 px-4 border bg-white text-[13px] placeholder:text-[#a7b0b8] transition-all focus:outline-none focus:border-brand-red focus:shadow-[0_0_0_3px_rgba(230,57,70,.12)] ${
+              errors.email ? 'border-brand-red' : 'border-border-light'
+            }`}
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="text-brand-red text-[10px] font-mono mt-1">{errors.email.message}</p>
+          )}
+        </div>
+
+        {/* Password & Confirm Password */}
         <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            error={errors.password?.message}
-            required
-            {...register('password')}
-          />
-          <Input
-            label="Confirm Password"
-            type="password"
-            placeholder="••••••••"
-            error={errors.confirmPassword?.message}
-            required
-            {...register('confirmPassword')}
-          />
+          <div>
+            <label htmlFor="password" className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary mb-2">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                placeholder="••••••••"
+                className={`w-full h-12 pl-4 pr-12 border bg-white text-[13px] placeholder:text-[#a7b0b8] transition-all focus:outline-none focus:border-brand-red focus:shadow-[0_0_0_3px_rgba(230,57,70,.12)] ${
+                  errors.password ? 'border-brand-red' : 'border-border-light'
+                }`}
+                {...register('password')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 top-0 h-12 w-12 text-text-secondary hover:text-brand-red"
+                aria-label="Show password"
+              >
+                <span className="inline-block" data-icon={showPassword ? 'lucide:eye-off' : 'lucide:eye'} data-inline="false" style={{ fontSize: '17px' }} />
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-brand-red text-[10px] font-mono mt-1">{errors.password.message}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="confirmPassword" className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary mb-2">
+              Confirm
+            </label>
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                placeholder="••••••••"
+                className={`w-full h-12 pl-4 pr-12 border bg-white text-[13px] placeholder:text-[#a7b0b8] transition-all focus:outline-none focus:border-brand-red focus:shadow-[0_0_0_3px_rgba(230,57,70,.12)] ${
+                  errors.confirmPassword ? 'border-brand-red' : 'border-border-light'
+                }`}
+                {...register('confirmPassword')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-0 top-0 h-12 w-12 text-text-secondary hover:text-brand-red"
+                aria-label="Show password"
+              >
+                <span className="inline-block" data-icon={showConfirmPassword ? 'lucide:eye-off' : 'lucide:eye'} data-inline="false" style={{ fontSize: '17px' }} />
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-brand-red text-[10px] font-mono mt-1">{errors.confirmPassword.message}</p>
+            )}
+          </div>
         </div>
-        <Select
-          label="Role"
-          options={roleOptions}
-          error={errors.role?.message}
-          required
-          {...register('role')}
-        />
+
+        {/* Role */}
+        <div>
+          <label htmlFor="role" className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary mb-2">
+            Role
+          </label>
+          <select
+            id="role"
+            className={`w-full h-12 px-4 border bg-white text-[13px] transition-all focus:outline-none focus:border-brand-red focus:shadow-[0_0_0_3px_rgba(230,57,70,.12)] ${
+              errors.role ? 'border-brand-red' : 'border-border-light'
+            }`}
+            {...register('role')}
+          >
+            {roleOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {errors.role && (
+            <p className="text-brand-red text-[10px] font-mono mt-1">{errors.role.message}</p>
+          )}
+        </div>
         {selectedRole && (
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-text-secondary">Selected role:</span>
             <RoleBadge role={selectedRole as any} />
           </div>
         )}
-        <Select
-          label="Department"
-          options={departmentOptions}
-          error={errors.department?.message}
-          required
-          {...register('department')}
-        />
+
+        {/* Department */}
+        <div>
+          <label htmlFor="department" className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary mb-2">
+            Department
+          </label>
+          <select
+            id="department"
+            className={`w-full h-12 px-4 border bg-white text-[13px] transition-all focus:outline-none focus:border-brand-red focus:shadow-[0_0_0_3px_rgba(230,57,70,.12)] ${
+              errors.department ? 'border-brand-red' : 'border-border-light'
+            }`}
+            {...register('department')}
+          >
+            {departmentOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {errors.department && (
+            <p className="text-brand-red text-[10px] font-mono mt-1">{errors.department.message}</p>
+          )}
+        </div>
         {selectedDepartment && (
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-text-secondary">Selected department:</span>
             <DepartmentBadge department={selectedDepartment as any} />
           </div>
         )}
-        <Button type="submit" className="w-full" isLoading={isLoading}>
-          Create Account
-        </Button>
-      </form>
 
-      {/* Login Link */}
-      <div className="mt-4 text-center text-[11px] text-text-secondary">
-        Already have an account?{' '}
-        <Link href="/login" className="text-brand-primary hover:underline font-semibold">
-          Sign In
-        </Link>
-      </div>
-    </div>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full h-12 bg-text-primary text-white font-mono text-[10px] uppercase tracking-wide-16 font-semibold shadow-[4px_4px_0_#e63946] transition-all hover:shadow-[2px_2px_0_#e63946] hover:translate-x-[2px] hover:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <svg className="w-4 h-4 animate-spin inline mr-2" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          ) : null}
+          Create account
+          <span className="inline-block ml-2 align-middle" data-icon="lucide:arrow-right" data-inline="false" style={{ fontSize: '15px' }} />
+        </button>
+      </form>
+    </AuthLayout>
   )
 }
