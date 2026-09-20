@@ -2,6 +2,8 @@
 
 import { useAuthStore } from "@/shared/stores/auth.store";
 import {
+  MoreVertical,
+  LogOut,
   BarChart3,
   CheckSquare2,
   Command,
@@ -23,6 +25,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   "layout-dashboard": LayoutDashboard,
   "folder-kanban": FolderKanban,
   "check-square-2": CheckSquare2,
+  "more-vertical": MoreVertical,
+  "log-out": LogOut,
   users: Users,
   "bar-chart-3": BarChart3,
   history: History,
@@ -41,7 +45,8 @@ const LucideIcon = ({ icon, className }: { icon: string; className?: string }) =
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { user, logout, isInitialized } = useAuthStore();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { user, logout, hasHydrated  } = useAuthStore();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -49,7 +54,7 @@ export const Sidebar = () => {
   }, []);
 
   const navItems =
-    isInitialized && user
+    hasHydrated  && user
       ? [
           {
             href: "/",
@@ -149,7 +154,7 @@ export const Sidebar = () => {
 
         {/* Navigation */}
         <div className="px-4 pt-7 flex-1 overflow-y-auto">
-          {!isInitialized ? (
+          {!hasHydrated  ? (
             <>
               <div className="px-3 mb-3">
                 <div className="h-3 bg-background-dark rounded animate-pulse w-20"></div>
@@ -221,7 +226,7 @@ export const Sidebar = () => {
 
         {/* User Profile Footer */}
         <div className="mt-auto p-4 border-t border-background-dark">
-          {!isInitialized ? (
+          {!hasHydrated  ? (
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-background-dark rounded animate-pulse"></div>
               <div className="min-w-0 flex-1">
@@ -230,7 +235,7 @@ export const Sidebar = () => {
               </div>
             </div>
           ) : user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 relative">
               <div className="w-8 h-8 bg-background-dark text-text-on-dark flex items-center justify-center font-mono text-[10px]">
                 {user.firstName[0]}
                 {user.lastName[0]}
@@ -243,6 +248,39 @@ export const Sidebar = () => {
                   {user.role === "PM" ? "PM / admin" : user.role.toLowerCase()}
                 </div>
               </div>
+
+              {/* 3 dots */}
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="text-text-secondary hover:text-white transition-colors p-1"
+                aria-label="User menu"
+              >
+                <LucideIcon icon="more-vertical" className="w-4 h-4" />
+              </button>
+
+              {isDropdownOpen && (
+                <>
+                  {/* Backdrop */}
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setIsDropdownOpen(false)}
+                  />
+                  
+                  {/* Dropdown content */}
+                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#1a222a] border border-background-dark rounded shadow-lg z-50">
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        logout();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-[12px] text-text-secondary hover:text-white hover:bg-[#111827] transition-colors"
+                    >
+                      <LucideIcon icon="log-out" className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ) : null}
         </div>

@@ -7,9 +7,11 @@ import { useEffect } from "react";
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, hasHydrated, user } = useAuthStore();
 
   useEffect(() => {
+    if (!hasHydrated ) return;
+
     const publicRoutes = ["/login", "/register"];
     const isPublicRoute = publicRoutes.includes(pathname);
 
@@ -20,7 +22,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     if (isAuthenticated && isPublicRoute) {
       router.push("/projects");
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [isAuthenticated, hasHydrated, pathname, router]);
 
   return <>{children}</>;
 }

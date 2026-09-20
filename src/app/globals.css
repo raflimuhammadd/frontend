@@ -8,32 +8,32 @@
     --color-brand-red: #e63946;
     --color-brand-green: #2a9d8f;
     --color-brand-orange: #f4a261;
-    
+
     --color-background: #f4f5f6;
     --color-background-card: #ffffff;
     --color-background-dark: #252d35;
-    
+
     --color-text-primary: #111820;
     --color-text-secondary: #7d8a99;
     --color-text-tertiary: #aab4bd;
     --color-text-on-dark: #e5e5e5;
-    
+
     --color-border-light: #cfd6dc;
     --color-border-dark: #252d35;
-    
+
     --color-status-todo: #3b82f6;
     --color-status-in-progress: #f4a261;
     --color-status-done: #2a9d8f;
     --color-status-blocked: #e63946;
-    
+
     --color-hover-bg: #f8fafb;
   }
 
   body {
     color: #111820;
     background-color: #f4f5f6;
-    font-family: 'Satoshi', system-ui, sans-serif;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
+    font-family: "Satoshi", system-ui, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   * {

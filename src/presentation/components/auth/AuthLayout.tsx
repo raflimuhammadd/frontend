@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import React from "react";
 import { KeyRound, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import type React from "react";
 import { HeroSection } from "./HeroSection";
 
 interface AuthLayoutProps {

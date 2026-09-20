@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { Command } from "lucide-react";
+import React from "react";
 
 export function HeroSection() {
   return (

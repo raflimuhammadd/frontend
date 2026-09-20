@@ -15,10 +15,16 @@ export class AuthService {
     return response.data.data;
   }
 
-  logout(): void {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+  async logout(): Promise<void> {
+    try {
+      await apiClient.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout API call failed:", error);
+    } finally {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
     }
   }
 }
