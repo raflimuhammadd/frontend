@@ -1,19 +1,19 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useDroppable } from '@dnd-kit/core'
-import { Badge } from '@/presentation/components/ui/Badge'
-import { EmptyState } from '@/presentation/components/ui/EmptyState'
-import { SortableTaskCard } from './TaskCard'
-import type { Task, TaskStatus } from '@/domain/types'
+import type { Task, TaskStatus } from "@/domain/types";
+import { Badge } from "@/presentation/components/ui/Badge";
+import { EmptyState } from "@/presentation/components/ui/EmptyState";
+import { useDroppable } from "@dnd-kit/core";
+import React from "react";
+import { SortableTaskCard } from "./TaskCard";
 
 interface SortableTaskColumnProps {
-  status: TaskStatus
-  label: string
-  color: 'primary' | 'warning' | 'success' | 'error'
-  tasks: Task[]
-  projectId: string
-  onTaskUpdate: () => void
+  status: TaskStatus;
+  label: string;
+  color: "primary" | "warning" | "success" | "error";
+  tasks: Task[];
+  projectId: string;
+  onTaskUpdate: () => void;
 }
 
 export function SortableTaskColumn({
@@ -26,13 +26,13 @@ export function SortableTaskColumn({
 }: SortableTaskColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
-  })
+  });
 
   return (
     <div
       ref={setNodeRef}
       className={`bg-card border border-border rounded-lg p-4 transition-colors ${
-        isOver ? 'border-primary bg-primary/5' : ''
+        isOver ? "border-primary bg-primary/5" : ""
       }`}
     >
       <div className="flex items-center justify-between mb-4">
@@ -49,15 +49,10 @@ export function SortableTaskColumn({
           </div>
         ) : (
           tasks.map((task) => (
-            <SortableTaskCard
-              key={task.id}
-              task={task}
-              projectId={projectId}
-              onView={() => {}}
-            />
+            <SortableTaskCard key={task.id} task={task} projectId={projectId} onView={() => {}} />
           ))
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,33 +1,33 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { apiClient } from '@/infrastructure/api/client'
-import { Card, CardContent, CardHeader } from '@/presentation/components/ui/Card'
-import { Badge } from '@/presentation/components/ui/Badge'
-import { Skeleton } from '@/presentation/components/ui/Skeleton'
-import { EmptyState } from '@/presentation/components/ui/EmptyState'
-import { ErrorState } from '@/presentation/components/ui/ErrorState'
+import { apiClient } from "@/infrastructure/api/client";
+import { Badge } from "@/presentation/components/ui/Badge";
+import { Card, CardContent, CardHeader } from "@/presentation/components/ui/Card";
+import { EmptyState } from "@/presentation/components/ui/EmptyState";
+import { ErrorState } from "@/presentation/components/ui/ErrorState";
+import { Skeleton } from "@/presentation/components/ui/Skeleton";
+import { useQuery } from "@tanstack/react-query";
+import React from "react";
 
 interface ClientMetrics {
-  projectId: string
-  projectName: string
-  totalTasks: number
-  completedTasks: number
-  blockedTasks: number
-  progress: number
+  projectId: string;
+  projectName: string;
+  totalTasks: number;
+  completedTasks: number;
+  blockedTasks: number;
+  progress: number;
 }
 
 export function ClientGuestDashboard({ projectId }: { projectId: string }) {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['client-metrics', projectId],
+    queryKey: ["client-metrics", projectId],
     queryFn: async () => {
-      const response = await apiClient.get(`/projects/${projectId}/client-metrics`)
-      return response.data.data
+      const response = await apiClient.get(`/projects/${projectId}/client-metrics`);
+      return response.data.data;
     },
-  })
+  });
 
-  const metrics: ClientMetrics = data || {}
+  const metrics: ClientMetrics = data || {};
 
   if (isLoading) {
     return (
@@ -39,18 +39,18 @@ export function ClientGuestDashboard({ projectId }: { projectId: string }) {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ErrorState
-          message={error instanceof Error ? error.message : 'Failed to load metrics'}
+          message={error instanceof Error ? error.message : "Failed to load metrics"}
           onRetry={() => refetch()}
         />
       </div>
-    )
+    );
   }
 
   if (!metrics.projectId) {
@@ -61,7 +61,7 @@ export function ClientGuestDashboard({ projectId }: { projectId: string }) {
           description="You don't have access to any projects or no data is available at this time"
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -130,12 +130,14 @@ export function ClientGuestDashboard({ projectId }: { projectId: string }) {
               <div className="w-3 h-3 rounded-full bg-warning flex-shrink-0" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">Attention Needed</p>
-                <p className="text-xs text-muted-foreground">{metrics.blockedTasks} tasks require attention</p>
+                <p className="text-xs text-muted-foreground">
+                  {metrics.blockedTasks} tasks require attention
+                </p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

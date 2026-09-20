@@ -1,110 +1,147 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useAuthStore } from '@/shared/stores/auth.store'
-import { Avatar } from '../ui/Avatar'
+import { useAuthStore } from "@/shared/stores/auth.store";
+import {
+  BarChart3,
+  CheckSquare2,
+  Command,
+  FolderKanban,
+  History,
+  LayoutDashboard,
+  Menu,
+  Settings2,
+  Users,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { Avatar } from "../ui/Avatar";
 
-interface IconProps extends React.HTMLAttributes<HTMLElement> {
-  icon?: string
-}
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  "layout-dashboard": LayoutDashboard,
+  "folder-kanban": FolderKanban,
+  "check-square-2": CheckSquare2,
+  users: Users,
+  "bar-chart-3": BarChart3,
+  history: History,
+  "settings-2": Settings2,
+  menu: Menu,
+  x: X,
+  command: Command,
+};
 
-const IconifyIcon = ({ icon, ...props }: IconProps) => {
-  const [isLoaded, setIsLoaded] = React.useState(false)
-  
-  React.useEffect(() => {
-    if (!window.iconifyLoaded && typeof window !== 'undefined') {
-      const script = document.createElement('script')
-      script.src = 'https://code.iconify.design/2/2.3.0/iconify.min.js'
-      script.async = true
-      script.onload = () => setIsLoaded(true)
-      document.head.appendChild(script)
-    } else {
-      setIsLoaded(true)
-    }
-  }, [icon])
-
-  if (!icon) return null
-
-  return (
-    <span 
-      {...props}
-      className={`inline-block ${isLoaded ? 'iconify' : ''} ${props.className || ''}`}
-      data-icon={icon}
-      data-inline="false"
-    />
-  )
-}
+const LucideIcon = ({ icon, className }: { icon: string; className?: string }) => {
+  const Icon = iconMap[icon];
+  if (!Icon) return null;
+  return <Icon className={className} />;
+};
 
 export const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const { user, logout } = useAuthStore()
-  const pathname = usePathname()
-  
-  if (!user) return null
+  const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { user, logout, isInitialized } = useAuthStore();
+  const pathname = usePathname();
 
-  const navItems = [
-    { 
-      href: '/projects', 
-      label: 'Projects', 
-      icon: 'lucide:layout-dashboard',
-      roles: ['PM', 'FRONTEND', 'BACKEND', 'UIUX']
-    },
-    { 
-      href: '/tasks', 
-      label: 'Tasks', 
-      icon: 'lucide:check-square-2',
-      roles: ['PM', 'FRONTEND', 'BACKEND', 'UIUX']
-    },
-    { 
-      href: '/admin', 
-      label: 'Admin', 
-      icon: 'lucide:settings',
-      roles: ['PM']
-    },
-  ].filter(item => item.roles.includes(user.role))
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const closeSidebar = () => setIsOpen(false)
+  const navItems =
+    isInitialized && user
+      ? [
+          {
+            href: "/",
+            label: "Overview",
+            icon: "layout-dashboard",
+            roles: ["PM", "FRONTEND", "BACKEND", "UIUX"],
+            section: "workspace",
+          },
+          {
+            href: "/projects",
+            label: "Projects",
+            icon: "folder-kanban",
+            roles: ["PM", "FRONTEND", "BACKEND", "UIUX"],
+            section: "workspace",
+          },
+          {
+            href: "/tasks",
+            label: "Tasks",
+            icon: "check-square-2",
+            roles: ["PM", "FRONTEND", "BACKEND", "UIUX"],
+            section: "workspace",
+          },
+          {
+            href: "/team",
+            label: "Team",
+            icon: "users",
+            roles: ["PM", "FRONTEND", "BACKEND", "UIUX"],
+            section: "workspace",
+          },
+          {
+            href: "/reports",
+            label: "Reports",
+            icon: "bar-chart-3",
+            roles: ["PM"],
+            section: "operations",
+          },
+          {
+            href: "/admin/audit",
+            label: "Audit trail",
+            icon: "history",
+            roles: ["PM"],
+            section: "operations",
+          },
+          {
+            href: "/settings",
+            label: "Settings",
+            icon: "settings-2",
+            roles: ["PM"],
+            section: "operations",
+          },
+        ].filter((item) => item.roles.includes(user.role))
+      : [];
+
+  const workspaceItems = navItems.filter((item) => item.section === "workspace");
+  const operationsItems = navItems.filter((item) => item.section === "operations");
+
+  const closeSidebar = () => setIsOpen(false);
 
   return (
     <>
       {/* Hamburger Menu Button (Mobile) */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 flex items-center justify-center bg-[#111827] text-[#e5e5e5] rounded-md"
-        aria-label="Toggle menu"
-      >
-        <IconifyIcon 
-          icon={isOpen ? 'lucide:x' : 'lucide:menu'} 
-          className="text-[20px]"
-        />
-      </button>
+      {mounted && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 flex items-center justify-center bg-[#111827] text-[#e5e5e5] rounded-md"
+          aria-label="Toggle menu"
+        >
+          <LucideIcon icon={isOpen ? "x" : "menu"} className="w-5 h-5" />
+        </button>
+      )}
 
       {/* Backdrop (Mobile) */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 md:hidden" 
-          onClick={closeSidebar}
-        />
+        <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={closeSidebar} />
       )}
 
       {/* Sidebar */}
-      <aside 
-        className={`fixed left-0 top-0 z-40 w-[238px] h-screen bg-[#111827] text-[#e5e5e5] flex flex-col border-r border-[#374151] overflow-hidden
+      <aside
+        className={`fixed left-0 top-0 z-40 w-[238px] h-screen bg-brand-dark text-white flex flex-col border-r border-background-dark overflow-hidden
           transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         {/* Header */}
-        <div className="h-[84px] px-6 flex items-center border-b border-[#374151]">
-          <div className="w-8 h-8 border border-[#dc2626] text-[#dc2626] flex items-center justify-center mr-3">
-            <IconifyIcon icon="lucide:command" className="text-[17px]" />
+        <div className="h-[84px] px-6 flex items-center border-b border-background-dark">
+          <div className="w-8 h-8 border border-brand-red text-brand-red flex items-center justify-center mr-3">
+            <Command className="w-4 h-4" />
           </div>
           <div>
-            <div className="font-bold tracking-tight text-[20px] leading-5 font-heading">
+            <div className="font-bold tracking-tight-05 text-[20px] leading-5 font-heading">
               nodewave
             </div>
-            <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6b7280] mt-1">
+            <div className="font-mono text-[9px] uppercase tracking-wide-20 text-text-secondary mt-1">
               control room
             </div>
           </div>
@@ -112,59 +149,107 @@ export const Sidebar = () => {
 
         {/* Navigation */}
         <div className="px-4 pt-7 flex-1 overflow-y-auto">
-          <p className="px-3 mb-3 text-[10px] uppercase tracking-[0.18em] font-semibold text-[#6b7280] font-mono">
-            Workspace
-          </p>
-          <nav className="space-y-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeSidebar}
-                  className={`flex items-center gap-3 px-3 py-3 text-[12px] uppercase tracking-[0.08em] font-mono transition-colors rounded-md
-                    ${isActive 
-                      ? 'bg-[#dc2626] text-white font-semibold' 
-                      : 'text-[#9ca3af] hover:text-[#e5e5e5] hover:bg-[#1a222a]'
-                    }`}
-                >
-                  <IconifyIcon icon={item.icon} className="text-[16px]" />
-                  {item.label}
-                </Link>
-              )
-            })}
-          </nav>
+          {!isInitialized ? (
+            <>
+              <div className="px-3 mb-3">
+                <div className="h-3 bg-background-dark rounded animate-pulse w-20"></div>
+              </div>
+              <div className="space-y-1 mb-8">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex items-center gap-3 px-3 py-3">
+                    <div className="w-4 h-4 bg-background-dark rounded animate-pulse"></div>
+                    <div className="h-3 bg-background-dark rounded animate-pulse w-16"></div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : user ? (
+            <>
+              <p className="px-3 mb-3 text-[10px] uppercase tracking-wide-18 font-semibold text-[#66727e]">
+                Workspace
+              </p>
+              <nav className="space-y-1 mb-8">
+                {workspaceItems.map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeSidebar}
+                      className={`flex items-center gap-3 px-3 py-3 text-[12px] uppercase tracking-wide-08 text-[#9ca8b3] hover:text-white hover:bg-[#1a222a] transition-colors
+                             ${isActive ? "bg-brand-red text-white font-semibold" : ""}`}
+                    >
+                      <LucideIcon icon={item.icon} className="w-4 h-4" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {operationsItems.length > 0 && (
+                <>
+                  <p className="px-3 mb-3 text-[10px] uppercase tracking-wide-18 font-semibold text-[#66727e]">
+                    Operations
+                  </p>
+                  <nav className="space-y-1">
+                    {operationsItems.map((item) => {
+                      const isActive =
+                        pathname === item.href || pathname.startsWith(item.href + "/");
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeSidebar}
+                          className={`flex items-center gap-3 px-3 py-3 text-[12px] uppercase tracking-wide-08 text-[#9ca8b3] hover:text-white hover:bg-[#1a222a] transition-colors
+                            ${isActive ? "bg-brand-red text-white font-semibold" : ""}`}
+                        >
+                          <LucideIcon icon={item.icon} className="w-4 h-4" />
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="text-center text-text-secondary py-8 text-[12px]">
+              Not authenticated
+            </div>
+          )}
         </div>
 
         {/* User Profile Footer */}
-        <div className="mt-auto p-4 border-t border-[#374151]">
-          <div className="flex items-center gap-3 mb-3">
-            <Avatar 
-              fallback={`${user.firstName} ${user.lastName}`}
-              src={user.avatar}
-              size="sm"
-            />
-            <div className="min-w-0 flex-1">
-              <div className="text-[12px] font-semibold truncate">
-                {user.firstName} {user.lastName}
-              </div>
-              <div className="font-mono text-[9px] uppercase text-[#6b7280] mt-1">
-                {user.role === 'PM' ? 'PM / admin' : user.role.toLowerCase()}
+        <div className="mt-auto p-4 border-t border-background-dark">
+          {!isInitialized ? (
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-background-dark rounded animate-pulse"></div>
+              <div className="min-w-0 flex-1">
+                <div className="h-3 bg-background-dark rounded animate-pulse w-24 mb-1"></div>
+                <div className="h-2 bg-background-dark rounded animate-pulse w-16"></div>
               </div>
             </div>
-          </div>
-          <button
-            onClick={logout}
-            className="w-full px-3 py-2 text-[10px] uppercase tracking-[0.1em] font-mono font-semibold text-[#6b7280] hover:text-[#dc2626] hover:bg-[#1a222a] rounded-md transition-colors"
-          >
-            Sign out
-          </button>
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-background-dark text-text-on-dark flex items-center justify-center font-mono text-[10px]">
+                {user.firstName[0]}
+                {user.lastName[0]}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[12px] font-semibold truncate">
+                  {user.firstName} {user.lastName}
+                </div>
+                <div className="font-mono text-[9px] uppercase text-text-secondary mt-1">
+                  {user.role === "PM" ? "PM / admin" : user.role.toLowerCase()}
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       </aside>
 
       {/* Spacer for desktop */}
       <div className="hidden md:block w-[238px] flex-shrink-0" />
     </>
-  )
-}
+  );
+};

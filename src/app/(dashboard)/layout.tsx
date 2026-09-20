@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { Sidebar } from '@/presentation/components/layout/Sidebar'
+import { Sidebar } from "@/presentation/components/layout/Sidebar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,5 +8,5 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Sidebar />
       <main className="flex-1 md:ml-0">{children}</main>
     </div>
-  )
+  );
 }
