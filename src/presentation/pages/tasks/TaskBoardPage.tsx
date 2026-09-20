@@ -1,77 +1,77 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { DndContext, DragEndEvent, closestCorners } from '@dnd-kit/core'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { useQuery } from '@tanstack/react-query'
-import { apiClient } from '@/infrastructure/api/client'
-import { Button } from '@/presentation/components/ui/Button'
-import { Input } from '@/presentation/components/ui/Input'
-import { Select } from '@/presentation/components/ui/Select'
-import { Badge } from '@/presentation/components/ui/Badge'
-import { Skeleton } from '@/presentation/components/ui/Skeleton'
-import { EmptyState } from '@/presentation/components/ui/EmptyState'
-import { ErrorState } from '@/presentation/components/ui/ErrorState'
-import { SortableTaskColumn } from '@/presentation/components/tasks/SortableTaskColumn'
-import { TaskModal } from '@/presentation/components/tasks/TaskModal'
-import { useAuthStore } from '@/shared/stores/auth.store'
-import type { Task, TaskStatus } from '@/domain/types'
+import type { Task, TaskStatus } from "@/domain/types";
+import { apiClient } from "@/infrastructure/api/client";
+import { SortableTaskColumn } from "@/presentation/components/tasks/SortableTaskColumn";
+import { TaskModal } from "@/presentation/components/tasks/TaskModal";
+import { Badge } from "@/presentation/components/ui/Badge";
+import { Button } from "@/presentation/components/ui/Button";
+import { EmptyState } from "@/presentation/components/ui/EmptyState";
+import { ErrorState } from "@/presentation/components/ui/ErrorState";
+import { Input } from "@/presentation/components/ui/Input";
+import { Select } from "@/presentation/components/ui/Select";
+import { Skeleton } from "@/presentation/components/ui/Skeleton";
+import { useAuthStore } from "@/shared/stores/auth.store";
+import { DndContext, type DragEndEvent, closestCorners } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useQuery } from "@tanstack/react-query";
+import React from "react";
 
 interface TaskBoardPageProps {
-  projectId: string
+  projectId: string;
 }
 
-const STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE', 'BLOCKED']
+const STATUSES: TaskStatus[] = ["TODO", "IN_PROGRESS", "DONE", "BLOCKED"];
 
 export function TaskBoardPage({ projectId }: TaskBoardPageProps) {
-  const { user } = useAuthStore()
-  const [isTaskModalOpen, setIsTaskModalOpen] = React.useState(false)
+  const { user } = useAuthStore();
+  const [isTaskModalOpen, setIsTaskModalOpen] = React.useState(false);
   const [filters, setFilters] = React.useState({
-    assignee: '',
-    priority: '',
-    dueDateFrom: '',
-    dueDateTo: '',
-  })
+    assignee: "",
+    priority: "",
+    dueDateFrom: "",
+    dueDateTo: "",
+  });
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['tasks', projectId],
+    queryKey: ["tasks", projectId],
     queryFn: async () => {
-      const response = await apiClient.get(`/projects/${projectId}/tasks`)
-      return response.data.data || response.data
+      const response = await apiClient.get(`/projects/${projectId}/tasks`);
+      return response.data.data || response.data;
     },
-  })
+  });
 
-  const tasks: Task[] = Array.isArray(data) ? data : []
-  
+  const tasks: Task[] = Array.isArray(data) ? data : [];
+
   const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event
-    
+    const { active, over } = event;
+
     if (active && over && active.id !== over.id) {
       try {
         await apiClient.patch(`/tasks/${active.id}/status`, {
           status: over.id as TaskStatus,
-        })
-        refetch()
+        });
+        refetch();
       } catch (error) {
-        console.error('Failed to update task status:', error)
+        console.error("Failed to update task status:", error);
       }
     }
-  }
+  };
 
   const tasksByStatus = STATUSES.reduce(
     (acc, status) => {
-      acc[status] = tasks.filter((task) => task.status === status)
-      return acc
+      acc[status] = tasks.filter((task) => task.status === status);
+      return acc;
     },
-    {} as Record<TaskStatus, Task[]>
-  )
+    {} as Record<TaskStatus, Task[]>,
+  );
 
   const statusConfigs = {
-    TODO: { label: 'Todo', color: 'primary' as const },
-    IN_PROGRESS: { label: 'In Progress', color: 'warning' as const },
-    DONE: { label: 'Done', color: 'success' as const },
-    BLOCKED: { label: 'Blocked', color: 'error' as const },
-  }
+    TODO: { label: "Todo", color: "primary" as const },
+    IN_PROGRESS: { label: "In Progress", color: "warning" as const },
+    DONE: { label: "Done", color: "success" as const },
+    BLOCKED: { label: "Blocked", color: "error" as const },
+  };
 
   if (isLoading) {
     return (
@@ -91,18 +91,18 @@ export function TaskBoardPage({ projectId }: TaskBoardPageProps) {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ErrorState
-          message={error instanceof Error ? error.message : 'Failed to load tasks'}
+          message={error instanceof Error ? error.message : "Failed to load tasks"}
           onRetry={() => refetch()}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -110,7 +110,9 @@ export function TaskBoardPage({ projectId }: TaskBoardPageProps) {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Task Board</h1>
-          <p className="text-muted-foreground mt-1">Drag tasks between columns to update their status</p>
+          <p className="text-muted-foreground mt-1">
+            Drag tasks between columns to update their status
+          </p>
         </div>
         <Button onClick={() => setIsTaskModalOpen(true)}>
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -127,9 +129,9 @@ export function TaskBoardPage({ projectId }: TaskBoardPageProps) {
           <Select
             label="Assignee"
             options={[
-              { value: '', label: 'All assignees' },
-              { value: 'me', label: 'Assigned to me' },
-              { value: 'unassigned', label: 'Unassigned' },
+              { value: "", label: "All assignees" },
+              { value: "me", label: "Assigned to me" },
+              { value: "unassigned", label: "Unassigned" },
             ]}
             value={filters.assignee}
             onChange={(e) => setFilters({ ...filters, assignee: e.target.value })}
@@ -137,10 +139,10 @@ export function TaskBoardPage({ projectId }: TaskBoardPageProps) {
           <Select
             label="Priority"
             options={[
-              { value: '', label: 'All priorities' },
-              { value: 'HIGH', label: 'High' },
-              { value: 'MEDIUM', label: 'Medium' },
-              { value: 'LOW', label: 'Low' },
+              { value: "", label: "All priorities" },
+              { value: "HIGH", label: "High" },
+              { value: "MEDIUM", label: "Medium" },
+              { value: "LOW", label: "Low" },
             ]}
             value={filters.priority}
             onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
@@ -167,20 +169,18 @@ export function TaskBoardPage({ projectId }: TaskBoardPageProps) {
           description="Create your first task to start managing project deliverables"
           icon={
             <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
             </svg>
           }
-          action={
-            <Button onClick={() => setIsTaskModalOpen(true)}>
-              Create Task
-            </Button>
-          }
+          action={<Button onClick={() => setIsTaskModalOpen(true)}>Create Task</Button>}
         />
       ) : (
-        <DndContext
-          collisionDetection={closestCorners}
-          onDragEnd={handleDragEnd}
-        >
+        <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {STATUSES.map((status) => (
               <SortableContext
@@ -209,5 +209,5 @@ export function TaskBoardPage({ projectId }: TaskBoardPageProps) {
         onTaskCreated={refetch}
       />
     </div>
-  )
+  );
 }

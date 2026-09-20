@@ -1,5 +1,5 @@
-import { DashboardPage } from '@/presentation/pages/dashboard/DashboardPage'
+import { DashboardPage } from "@/presentation/pages/dashboard/DashboardPage";
 
 export default function Page() {
-  return <DashboardPage />
+  return <DashboardPage />;
 }

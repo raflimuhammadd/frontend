@@ -1,48 +1,22 @@
-'use client'
+"use client";
 
-import React from 'react'
-import Link from 'next/link'
-import { HeroSection } from './HeroSection'
-
-interface IconProps extends React.HTMLAttributes<HTMLElement> {
-  icon?: string
-}
-
-const IconifyIcon = ({ icon, ...props }: IconProps) => {
-  const [isLoaded, setIsLoaded] = React.useState(false)
-  
-  React.useEffect(() => {
-    if (!window.iconifyLoaded && typeof window !== 'undefined') {
-      const script = document.createElement('script')
-      script.src = 'https://code.iconify.design/2/2.3.0/iconify.min.js'
-      script.async = true
-      document.head.appendChild(script)
-    }
-  }, [icon])
-
-  if (!icon) return null
-
-  return (
-    <span 
-      {...props}
-      className={`inline-block ${isLoaded ? 'iconify' : ''} ${props.className || ''}`}
-      data-icon={icon}
-      data-inline="false"
-    />
-  )
-}
+import Link from "next/link";
+import React from "react";
+import { KeyRound, ShieldCheck } from "lucide-react";
+import { HeroSection } from "./HeroSection";
 
 interface AuthLayoutProps {
-  children: React.ReactNode
-  title: string
-  subtitle: string
-  variant: 'login' | 'register'
+  children: React.ReactNode;
+  title: string;
+  subtitle: string;
+  variant: "login" | "register";
 }
 
 export function AuthLayout({ children, title, subtitle, variant }: AuthLayoutProps) {
-  const registerLink = variant === 'login'
-    ? { text: 'Create an account', href: '/register' }
-    : { text: 'Sign In', href: '/login' }
+  const registerLink =
+    variant === "login"
+      ? { text: "Create an account", href: "/register" }
+      : { text: "Sign In", href: "/login" };
 
   return (
     <div className="min-h-screen w-full bg-white text-text-primary flex flex-col lg:flex-row">
@@ -68,14 +42,12 @@ export function AuthLayout({ children, title, subtitle, variant }: AuthLayoutPro
           {/* Title Section */}
           <div className="mb-10">
             <div className="font-mono text-[10px] uppercase tracking-wide-20 text-brand-red mb-4">
-              / {variant === 'login' ? 'sign in' : 'create account'}
+              / {variant === "login" ? "sign in" : "create account"}
             </div>
             <h2 className="text-[42px] leading-none tracking-tight-06 font-bold font-heading text-text-primary">
               {title}
             </h2>
-            <p className="mt-4 text-[14px] leading-6 text-text-secondary">
-              {subtitle}
-            </p>
+            <p className="mt-4 text-[14px] leading-6 text-text-secondary">{subtitle}</p>
           </div>
 
           {/* Form Content */}
@@ -91,21 +63,15 @@ export function AuthLayout({ children, title, subtitle, variant }: AuthLayoutPro
           </div>
 
           {/* SSO Button */}
-          <button className="w-full h-11 border border-border-light bg-white text-text-primary font-mono text-[10px] uppercase tracking-[.12em] font-semibold hover:border-text-primary transition-colors">
-            <IconifyIcon icon="lucide:key-round" className="mr-2 text-[15px] align-middle inline" />
+          <button className="w-full h-11 border border-border-light bg-white text-text-primary font-mono text-[10px] uppercase tracking-[.12em] font-semibold hover:border-text-primary transition-colors flex items-center justify-center gap-2">
+            <KeyRound className="w-3.5 h-3.5" />
             Continue with SSO
           </button>
 
           {/* Footer Link */}
           <p className="text-center mt-10 text-[13px] text-text-secondary">
-            {variant === 'login' 
-              ? 'New to NodeWave? '
-              : 'Already have an account? '
-            }
-            <Link 
-              href={registerLink.href} 
-              className="font-semibold text-brand-red hover:underline"
-            >
+            {variant === "login" ? "New to NodeWave? " : "Already have an account? "}
+            <Link href={registerLink.href} className="font-semibold text-brand-red hover:underline">
               {registerLink.text}
             </Link>
           </p>
@@ -116,12 +82,12 @@ export function AuthLayout({ children, title, subtitle, variant }: AuthLayoutPro
               Protected session
             </span>
             <span className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[.12em] text-[#a0aab3]">
-              <IconifyIcon icon="lucide:shield-check" className="text-brand-green text-[14px]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-brand-green" />
               JWT secured
             </span>
           </div>
         </section>
       </main>
     </div>
-  )
+  );
 }

@@ -1,100 +1,101 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { apiClient } from '@/infrastructure/api/client'
-import { useAuthStore } from '@/shared/stores/auth.store'
-import { Card, CardContent, CardHeader } from '@/presentation/components/ui/Card'
-import { Badge } from '@/presentation/components/ui/Badge'
-import { Input } from '@/presentation/components/ui/Input'
-import { Skeleton } from '@/presentation/components/ui/Skeleton'
-import { ErrorState } from '@/presentation/components/ui/ErrorState'
-import { Button } from '@/presentation/components/ui/Button'
+import { apiClient } from "@/infrastructure/api/client";
+import { Badge } from "@/presentation/components/ui/Badge";
+import { Button } from "@/presentation/components/ui/Button";
+import { Card, CardContent, CardHeader } from "@/presentation/components/ui/Card";
+import { ErrorState } from "@/presentation/components/ui/ErrorState";
+import { Input } from "@/presentation/components/ui/Input";
+import { Skeleton } from "@/presentation/components/ui/Skeleton";
+import { useAuthStore } from "@/shared/stores/auth.store";
+import { useQuery } from "@tanstack/react-query";
+import { Download, Search, ShieldCheck } from "lucide-react";
+import React from "react";
 
 interface AuditLog {
-  id: string
-  userId: string
-  taskId: string
-  action: string
-  changedField?: string
-  oldValue?: string
-  newValue?: string
-  timestamp: string
+  id: string;
+  userId: string;
+  taskId: string;
+  action: string;
+  changedField?: string;
+  oldValue?: string;
+  newValue?: string;
+  timestamp: string;
   user?: {
-    firstName: string
-    lastName: string
-    role: string
-  }
+    firstName: string;
+    lastName: string;
+    role: string;
+  };
   task?: {
-    title: string
-  }
+    title: string;
+  };
 }
 
 export function AuditTrailPage() {
-  const { user } = useAuthStore()
-  const [searchQuery, setSearchQuery] = React.useState('')
-  const [actionFilter, setActionFilter] = React.useState<string>('')
-  const [dateFilter, setDateFilter] = React.useState<string>('')
+  const { user } = useAuthStore();
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [actionFilter, setActionFilter] = React.useState<string>("");
+  const [dateFilter, setDateFilter] = React.useState<string>("");
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['audit-logs'],
+    queryKey: ["audit-logs"],
     queryFn: async () => {
-      const response = await apiClient.get('/audit-logs')
-      return response.data.data || response.data || []
+      const response = await apiClient.get("/audit-logs");
+      return response.data.data || response.data || [];
     },
-    enabled: user?.role === 'PM',
-  })
+    enabled: user?.role === "PM",
+  });
 
-  const auditLogs: AuditLog[] = Array.isArray(data) ? data : []
+  const auditLogs: AuditLog[] = Array.isArray(data) ? data : [];
 
-  const filteredLogs = auditLogs.filter(log => {
+  const filteredLogs = auditLogs.filter((log) => {
     const matchesSearch =
       log.taskId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.action?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.user?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.user?.lastName?.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesAction = !actionFilter || log.action === actionFilter
-    return matchesSearch && matchesAction
-  })
+      log.user?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesAction = !actionFilter || log.action === actionFilter;
+    return matchesSearch && matchesAction;
+  });
 
   const getActionColor = (action: string) => {
     switch (action.toLowerCase()) {
-      case 'create':
-      case 'created':
-        return 'success'
-      case 'update':
-      case 'updated':
-        return 'warning'
-      case 'delete':
-      case 'deleted':
-        return 'error'
-      case 'status_change':
-        return 'info'
+      case "create":
+      case "created":
+        return "success";
+      case "update":
+      case "updated":
+        return "warning";
+      case "delete":
+      case "deleted":
+        return "error";
+      case "status_change":
+        return "info";
       default:
-        return 'secondary'
+        return "secondary";
     }
-  }
+  };
 
   const formatTimestamp = (timestamp: string) => {
     try {
-      const date = new Date(timestamp)
-      const now = new Date()
-      const diffMs = now.getTime() - date.getTime()
-      const diffMins = Math.floor(diffMs / 60000)
-      const diffHours = Math.floor(diffMs / 3600000)
-      const diffDays = Math.floor(diffMs / 86400000)
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
 
-      if (diffMins < 1) return 'just now'
-      if (diffMins < 60) return `${diffMins} min ago`
-      if (diffHours < 24) return `${diffHours} hr ago`
-      if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
-      return date.toLocaleDateString()
+      if (diffMins < 1) return "just now";
+      if (diffMins < 60) return `${diffMins} min ago`;
+      if (diffHours < 24) return `${diffHours} hr ago`;
+      if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+      return date.toLocaleDateString();
     } catch {
-      return timestamp
+      return timestamp;
     }
-  }
+  };
 
-  if (user?.role !== 'PM') {
+  if (user?.role !== "PM") {
     return (
       <div className="max-w-[1430px] mx-auto px-5 md:px-10 py-8">
         <div className="text-center py-20">
@@ -103,7 +104,7 @@ export function AuditTrailPage() {
           <p className="text-text-secondary">Only Project Managers can access the audit trail.</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (isLoading) {
@@ -112,18 +113,18 @@ export function AuditTrailPage() {
         <Skeleton width="300px" height="60px" className="mb-8" />
         <Skeleton width="100%" height="400px" />
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className="max-w-[1430px] mx-auto px-5 md:px-10 py-8">
         <ErrorState
-          message={error instanceof Error ? error.message : 'Failed to load audit logs'}
+          message={error instanceof Error ? error.message : "Failed to load audit logs"}
           onRetry={() => refetch()}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -136,7 +137,8 @@ export function AuditTrailPage() {
           Audit trail.
         </h1>
         <p className="text-[13px] text-text-secondary mt-5 max-w-[430px]">
-          Immutable record of all task changes, status transitions, and user actions across projects.
+          Immutable record of all task changes, status transitions, and user actions across
+          projects.
         </p>
       </div>
 
@@ -145,18 +147,18 @@ export function AuditTrailPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-text-secondary text-[15px]" data-icon="lucide:search" data-inline="false" />
+                <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-secondary" />
                 <input
                   type="text"
                   placeholder="Search task, user, or action"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-[220px] h-9 pl-9 pr-3 rounded-none border border-border-light text-[11px] outline-none focus:border-text-primary"
                 />
               </div>
               <select
                 value={actionFilter}
-                onChange={e => setActionFilter(e.target.value)}
+                onChange={(e) => setActionFilter(e.target.value)}
                 className="h-9 px-3 border border-border-light text-[11px] outline-none focus:border-text-primary"
               >
                 <option value="">All actions</option>
@@ -168,7 +170,7 @@ export function AuditTrailPage() {
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm">
-                <span className="inline-block w-[14px] h-[14px]" data-icon="lucide:download" data-inline="false" />
+                <Download className="w-3.5 h-3.5" />
                 <span className="ml-2">Export</span>
               </Button>
               <span className="font-mono text-[9px] uppercase text-text-secondary">
@@ -184,19 +186,19 @@ export function AuditTrailPage() {
               <div className="text-[13px] mb-2">No audit logs found</div>
               <p className="text-[11px]">
                 {auditLogs.length === 0
-                  ? 'Changes to tasks will be recorded here'
-                  : 'Try adjusting your filters'}
+                  ? "Changes to tasks will be recorded here"
+                  : "Try adjusting your filters"}
               </p>
             </div>
           ) : (
             <div className="divide-y divide-border-light">
-              {filteredLogs.map(log => (
+              {filteredLogs.map((log) => (
                 <div key={log.id} className="p-4 hover:bg-hover-bg transition-colors">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-muted/30 text-text-primary flex items-center justify-center font-mono text-[9px] font-bold">
-                        {log.user?.firstName?.[0] || '?'}
-                        {log.user?.lastName?.[0] || '?'}
+                        {log.user?.firstName?.[0] || "?"}
+                        {log.user?.lastName?.[0] || "?"}
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -208,8 +210,8 @@ export function AuditTrailPage() {
                           </Badge>
                         </div>
                         <div className="text-[11px] text-text-secondary">
-                          <span className="font-mono">{log.user?.role || 'Unknown'}</span>
-                          {' · '}
+                          <span className="font-mono">{log.user?.role || "Unknown"}</span>
+                          {" · "}
                           {formatTimestamp(log.timestamp)}
                         </div>
                       </div>
@@ -257,18 +259,18 @@ export function AuditTrailPage() {
 
       <div className="p-4 bg-hover-bg border border-border-light">
         <div className="flex items-start gap-3">
-          <span className="inline-block w-[16px] h-[16px] text-text-secondary mt-0.5" data-icon="lucide:shield-check" data-inline="false" />
+          <ShieldCheck className="w-4 h-4 text-text-secondary mt-0.5" />
           <div>
             <h4 className="text-[11px] font-semibold text-text-primary mb-1 font-mono uppercase tracking-wide-15">
               Immutable audit trail
             </h4>
             <p className="text-[11px] text-text-secondary">
-              All changes are permanently recorded and cannot be modified or deleted. This log serves as the
-              authoritative source of truth for compliance and accountability.
+              All changes are permanently recorded and cannot be modified or deleted. This log
+              serves as the authoritative source of truth for compliance and accountability.
             </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

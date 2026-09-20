@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import React from 'react'
+import type React from "react";
 
 export interface EmptyStateProps {
-  title: string
-  description?: string
-  icon?: React.ReactNode
-  action?: React.ReactNode
+  title: string;
+  description?: string;
+  icon?: React.ReactNode;
+  action?: React.ReactNode;
 }
 
 export const EmptyState = ({ title, description, icon, action }: EmptyStateProps) => {
@@ -17,5 +17,5 @@ export const EmptyState = ({ title, description, icon, action }: EmptyStateProps
       {description && <p className="text-sm text-muted-foreground mb-6 max-w-md">{description}</p>}
       {action && <div>{action}</div>}
     </div>
-  )
-}
+  );
+};

@@ -1,37 +1,7 @@
-'use client'
+"use client";
 
-import React from 'react'
-
-interface IconProps extends React.HTMLAttributes<HTMLElement> {
-  icon?: string
-}
-
-const IconifyIcon = ({ icon, ...props }: IconProps) => {
-  const [isLoaded, setIsLoaded] = React.useState(false)
-  
-  React.useEffect(() => {
-    if (!window.iconifyLoaded && typeof window !== 'undefined') {
-      const script = document.createElement('script')
-      script.src = 'https://code.iconify.design/2/2.3.0/iconify.min.js'
-      script.async = true
-      script.onload = () => setIsLoaded(true)
-      document.head.appendChild(script)
-    } else {
-      setIsLoaded(true)
-    }
-  }, [icon])
-
-  if (!icon) return null
-
-  return (
-    <span 
-      {...props}
-      className={`inline-block ${isLoaded ? 'iconify' : ''} ${props.className || ''}`}
-      data-icon={icon}
-      data-inline="false"
-    />
-  )
-}
+import React from "react";
+import { Command } from "lucide-react";
 
 export function HeroSection() {
   return (
@@ -39,10 +9,12 @@ export function HeroSection() {
       {/* Header */}
       <div className="h-[84px] px-6 md:px-10 flex items-center border-b border-background-dark">
         <div className="w-8 h-8 border border-brand-red text-brand-red flex items-center justify-center mr-3">
-          <IconifyIcon icon="lucide:command" className="text-[17px]" />
+          <Command className="w-4 h-4" />
         </div>
         <div>
-          <div className="font-bold tracking-tight-05 text-[20px] leading-5 font-heading">nodewave</div>
+          <div className="font-bold tracking-tight-05 text-[20px] leading-5 font-heading">
+            nodewave
+          </div>
           <div className="font-mono text-[9px] uppercase tracking-wide-20 text-text-secondary mt-1">
             control room
           </div>
@@ -59,11 +31,13 @@ export function HeroSection() {
             / secure operations / 01
           </div>
           <h1 className="text-[52px] md:text-[72px] lg:text-[78px] leading-[.88] tracking-tight-07 font-bold max-w-[620px] font-heading">
-            Keep delivery<br />
+            Keep delivery
+            <br />
             <span className="text-brand-red">moving.</span>
           </h1>
           <p className="mt-8 max-w-[420px] text-[15px] leading-7 text-text-tertiary">
-            The operational backbone for teams shipping high-value work across product, design, frontend, and backend.
+            The operational backbone for teams shipping high-value work across product, design,
+            frontend, and backend.
           </p>
 
           {/* Feature Cards */}
@@ -122,5 +96,5 @@ export function HeroSection() {
         </span>
       </div>
     </aside>
-  )
+  );
 }

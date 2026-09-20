@@ -1,5 +1,5 @@
-import { TaskControlRoomPage } from '@/presentation/pages/tasks/TaskControlRoomPage'
+import { TaskControlRoomPage } from "@/presentation/pages/tasks/TaskControlRoomPage";
 
 export default function Page() {
-  return <TaskControlRoomPage />
+  return <TaskControlRoomPage />;
 }

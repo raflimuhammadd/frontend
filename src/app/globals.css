@@ -4,77 +4,40 @@
 
 @layer base {
   :root {
-    /* Background & Surfaces (from prompt design system) */
-    --background: 244 245 246;
-    --background-card: 255 255 255;
-    --sidebar-bg: 15 20 25;
-    --sidebar-border: 37 45 53;
+    --color-brand-dark: #0f1419;
+    --color-brand-red: #e63946;
+    --color-brand-green: #2a9d8f;
+    --color-brand-orange: #f4a261;
     
-    /* Text Colors */
-    --text-primary: 17 24 32;
-    --text-secondary: 125 138 153;
-    --text-tertiary: 170 180 189;
-    --text-on-dark: 229 229 229;
+    --color-background: #f4f5f6;
+    --color-background-card: #ffffff;
+    --color-background-dark: #252d35;
     
-    /* Brand Accent Colors */
-    --brand-primary: 17 24 32;
-    --brand-red: 230 57 70;
-    --brand-green: 42 157 143;
-    --brand-orange: 244 162 97;
+    --color-text-primary: #111820;
+    --color-text-secondary: #7d8a99;
+    --color-text-tertiary: #aab4bd;
+    --color-text-on-dark: #e5e5e5;
     
-    /* Borders & Dividers */
-    --border-light: 207 214 220;
-    --border-medium: 203 213 225;
-    --border-dark: 37 45 53;
+    --color-border-light: #cfd6dc;
+    --color-border-dark: #252d35;
     
-    /* Status Colors (Task States) */
-    --status-todo: 59 130 246;
-    --status-in-progress: 244 162 97;
-    --status-done: 42 157 143;
-    --status-blocked: 230 57 70;
+    --color-status-todo: #3b82f6;
+    --color-status-in-progress: #f4a261;
+    --color-status-done: #2a9d8f;
+    --color-status-blocked: #e63946;
     
-    /* Interactive States */
-    --hover-bg: 248 250 251;
-    --focus-ring: 230 57 70;
-    --shadow-color: 230 57 70;
-    
-    /* Legacy mappings for compatibility */
-    --foreground: 17 24 32;
-    --card: 255 255 255;
-    --card-foreground: 17 24 32;
-    --primary: 17 24 32;
-    --primary-foreground: 255 255 255;
-    --secondary: 125 138 153;
-    --secondary-foreground: 255 255 255;
-    --accent: 230 57 70;
-    --accent-foreground: 255 255 255;
-    --muted: 170 180 189;
-    --muted-foreground: 125 138 153;
-    --border: 207 214 220;
-    --input: 255 255 255;
-    --ring: 230 57 70;
-    --success: 42 157 143;
-    --error: 230 57 70;
-    --warning: 244 162 97;
-    --info: 2 132 199;
+    --color-hover-bg: #f8fafb;
   }
 
   body {
-    color: var(--text-primary);
+    color: #111820;
+    background-color: #f4f5f6;
     font-family: 'Satoshi', system-ui, sans-serif;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    background-color: rgb(var(--background));
+    font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 
   * {
-    border-color: var(--border-light);
-  }
-}
-
-@layer base {
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    opacity: 1;
+    border-color: #cfd6dc;
   }
 }
 
@@ -86,11 +49,11 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  
+
   .animate-in {
     animation: animate-in 0.3s ease-out;
   }
-  
+
   @keyframes animate-in {
     from {
       opacity: 0;
@@ -101,17 +64,18 @@
       transform: translateY(0);
     }
   }
-  
+
   .animate-pulse-dot {
     animation: pulse-dot 2s ease-in-out infinite;
   }
-  
+
   @keyframes pulse-dot {
-    0%, 100% { 
-      box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.25); 
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.25);
     }
-    50% { 
-      box-shadow: 0 0 0 5px rgba(230, 57, 70, 0); 
+    50% {
+      box-shadow: 0 0 0 5px rgba(230, 57, 70, 0);
     }
   }
 }

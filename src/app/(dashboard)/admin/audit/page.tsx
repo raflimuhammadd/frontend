@@ -1,5 +1,5 @@
-import { AuditTrailPage } from '@/presentation/pages/audit/AuditTrailPage'
+import { AuditTrailPage } from "@/presentation/pages/audit/AuditTrailPage";
 
 export default function Page() {
-  return <AuditTrailPage />
+  return <AuditTrailPage />;
 }

@@ -1,26 +1,27 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { AuthLayout } from './AuthLayout'
-import { useAuthStore } from '@/shared/stores/auth.store'
-import { Input } from '@/presentation/components/ui/Input'
+import { Input } from "@/presentation/components/ui/Input";
+import { useAuthStore } from "@/shared/stores/auth.store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { AuthLayout } from "./AuthLayout";
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-})
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
 
-type LoginFormData = z.infer<typeof loginSchema>
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const { setAuth } = useAuthStore()
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { setAuth } = useAuthStore();
+  const router = useRouter();
 
   const {
     register,
@@ -28,38 +29,35 @@ export function LoginForm() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-  })
+  });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true)
-    setError('')
+    setIsLoading(true);
+    setError("");
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        }
-      )
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Login failed')
+        throw new Error(result.error || "Login failed");
       }
 
-      setAuth(result.data.token, result.data.user)
-      router.push('/projects')
+      setAuth(result.data.token, result.data.user);
+      router.push("/projects");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <AuthLayout
@@ -84,29 +82,35 @@ export function LoginForm() {
           placeholder="you@company.com"
           autoComplete="email"
           error={errors.email?.message}
-          {...register('email')}
+          {...register("email")}
         />
 
         {/* Password Input */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label htmlFor="password" className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary">
+            <label
+              htmlFor="password"
+              className="block font-mono text-[10px] uppercase tracking-wide-15 font-semibold text-text-primary"
+            >
               Password
             </label>
-            <a href="#forgot-password" className="font-mono text-[10px] uppercase tracking-[.1em] text-brand-red hover:underline">
+            <a
+              href="#forgot-password"
+              className="font-mono text-[10px] uppercase tracking-[.1em] text-brand-red hover:underline"
+            >
               Forgot password?
             </a>
           </div>
           <div className="relative">
             <input
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               placeholder="Enter your password"
               className={`w-full h-12 pl-4 pr-12 border bg-background-card text-[13px] placeholder:text-text-tertiary transition-all focus:outline-none focus:border-brand-red focus:shadow-focus-red ${
-                errors.password ? 'border-brand-red' : 'border-border-light'
+                errors.password ? "border-brand-red" : "border-border-light"
               }`}
-              {...register('password')}
+              {...register("password")}
             />
             <button
               type="button"
@@ -114,7 +118,7 @@ export function LoginForm() {
               className="absolute right-0 top-0 h-12 w-12 text-text-secondary hover:text-brand-red"
               aria-label="Show password"
             >
-              <span className="inline-block" data-icon={showPassword ? 'lucide:eye-off' : 'lucide:eye'} data-inline="false" style={{ fontSize: '17px' }} />
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {errors.password && (
@@ -134,18 +138,13 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full h-12 bg-text-primary text-white font-mono text-[10px] uppercase tracking-wide-16 font-semibold shadow-red hover:shadow-red-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-12 bg-text-primary text-white font-mono text-[10px] uppercase tracking-wide-16 font-semibold shadow-red hover:shadow-red-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {isLoading && (
-            <svg className="w-4 h-4 animate-spin inline mr-2" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-          )}
+          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
           Sign in to workspace
-          <span className="inline-block ml-2 align-middle" data-icon="lucide:arrow-right" data-inline="false" style={{ fontSize: '15px' }} />
+          {!isLoading && <ArrowRight className="w-4 h-4" />}
         </button>
       </form>
     </AuthLayout>
-  )
+  );
 }
