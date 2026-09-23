@@ -9,20 +9,18 @@ interface AuthStore {
   token: string | null;
   user: User | null;
   isAuthenticated: boolean;
-  hasHydrated: boolean;  // NEW: track hydration completion
+  hasHydrated: boolean;
   setAuth: (token: string, user: User) => void;
   logout: () => Promise<void>;
   hasRole: (role: string) => boolean;
   hasDepartment: (department: string) => boolean;
 }
 
-// Helper untuk client-side localStorage
 const storage = createJSONStorage(() => localStorage);
 
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
-      // ALWAYS consistent initial state
       token: null,
       user: null,
       isAuthenticated: false,
@@ -46,6 +44,9 @@ export const useAuthStore = create<AuthStore>()(
           hasHydrated: true 
         });
         if (typeof window !== "undefined") {
+          localStorage.removeItem("auth-storage");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
           window.location.href = "/login";
         }
       },

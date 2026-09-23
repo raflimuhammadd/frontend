@@ -20,11 +20,6 @@ export class AuthService {
       await apiClient.post("/auth/logout");
     } catch (error) {
       console.error("Logout API call failed:", error);
-    } finally {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-      }
     }
   }
 }
