@@ -1,5 +1,4 @@
 "use client";
-
 import { Input } from "@/presentation/components/ui/Input";
 import { useAuthStore } from "@/shared/stores/auth.store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +13,6 @@ const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
 });
-
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
